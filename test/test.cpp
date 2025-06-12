@@ -7,7 +7,7 @@
 
 int main()
 {
-    std::cout << Test::add(5, 6);
+    std::cout << "change";
     
 
     return 0;
