@@ -10,6 +10,8 @@ template <typename T>
 class Deque;
 
 
+
+
 template <typename T>
 class DequeElement {
 	T data;
@@ -17,6 +19,10 @@ class DequeElement {
 public:
 	DequeElement(T adata) : data(adata) {};
 	friend class Deque<T>;
+	
+	template <typename U>
+	friend ostream& operator<<(ostream& out, const Deque<U>& deque);
+	
 };
 
 template <typename T>
@@ -37,13 +43,16 @@ public:
 	bool empty();
 	void resize(int n);
 	void insert(int pos, const T& value, int n = 1);
+	
 	Deque() = default;
 	Deque(int n, const T& value);
 	Deque(int n);
 	Deque(const Deque& copy);
 	Deque(const vector<T>& arr);
 	const T& operator[](int index) const;
-
+	template <typename U>
+	friend ostream& operator<<(ostream& out, const Deque<U>& deque);
+	
 
 };
 
@@ -218,3 +227,19 @@ void Deque<T>::insert(int pos, const T& value, int n) {
 		}
 	}
 }
+
+
+template <typename T>
+ostream& operator<<(ostream& out, const Deque<T>& deque) {
+	auto begin = deque.front;
+	while (begin) {
+		out << begin->data << " ";
+		begin = begin->next;
+	}
+	return out;
+}
+
+
+
+
+
