@@ -204,6 +204,7 @@ void Set<T>::erase(const T& data) {
 	else {
 		first = elem->next;
 	}
+	size--;
 		
 
 		
