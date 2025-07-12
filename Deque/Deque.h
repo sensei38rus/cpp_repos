@@ -134,18 +134,8 @@ void Deque<T>::clear(){
 
 template <typename T>
 const T& Deque<T>::at(int index) const{
-
-	/*if (index >= 0 && index < size) {
-		shared_ptr<DequeElement<T>> element = front;
-		for (int i = 0; i < index; i++) {
-			element = element->next;
-		}
-		return element->data;
-	}
-	return front->data;*/
-	
-	if (index < 0 && index >= size) {
-		throw out_of_range("out of range");
+	if (index < 0 || index >= size) {
+		throw out_of_range("invalid index");
 	}
 	else {
 		shared_ptr<DequeElement<T>> element = front;
