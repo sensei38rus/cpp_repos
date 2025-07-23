@@ -14,6 +14,7 @@ class Deque;
 
 template <typename T>
 class DequeElement {
+
 	T data;
 	shared_ptr<DequeElement> next;
 public:
@@ -43,7 +44,9 @@ public:
 	bool empty();
 	void resize(int n);
 	void insert(int pos, const T& value, int n = 1);
+
 	
+
 	Deque() = default;
 	Deque(int n, const T& value);
 	Deque(int n);
@@ -52,8 +55,68 @@ public:
 	const T& operator[](int index) const;
 	template <typename U>
 	friend ostream& operator<<(ostream& out, const Deque<U>& deque);
-	
 
+	class Iterator {
+	public:
+		shared_ptr<DequeElement<T>> ptr;
+	public:
+		Iterator(shared_ptr<DequeElement<T>> ptr) : ptr(ptr) {}
+		Iterator() = default;
+		Iterator& operator=(const Iterator& another) {
+			ptr = another.ptr;
+			return *this;
+		}
+		operator bool() const{
+			return ptr.get();
+		}
+		const T& operator*() {
+			return ptr->data;
+		}
+		Iterator& operator++() {
+			ptr = ptr->next;
+				
+			return *this;
+		}
+		Iterator operator+(int n) {
+			auto copy = *this;
+			for (int i = 0; i < n; i++) {
+				copy.ptr = copy.ptr->next;
+					
+			}
+			return copy;
+		}
+		Iterator& operator+=(int n) {
+			for (int i = 0; i < n; i++) {
+				ptr = ptr->next;
+			}
+			return *this;
+		}
+		bool operator==(const Iterator& another) {
+			return ptr.get() == another.ptr.get();
+		}
+		bool operator!=(const Iterator& another) {
+			return ptr.get() != another.ptr.get();
+		}
+		bool operator>(const Iterator& another) {
+			return ptr.get() > another.ptr.get();
+		}
+		bool operator<(const Iterator& another) {
+			return ptr.get() < another.ptr.get();
+		}
+		bool operator<=(const Iterator& another) {
+			return ptr.get() <= another.ptr.get();
+		}
+		bool operator>=(const Iterator& another) {
+			return ptr.get() >= another.ptr.get();
+		}
+	};
+
+	Iterator begin() const {
+		return Iterator(front);
+	}
+	Iterator end() const {
+		return Iterator(back);
+	}
 };
 
 
