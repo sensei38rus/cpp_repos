@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <span>
+#include <type_traits>
 template <typename T>
 int binary_search(std::vector<T> sorted_array, const T& value) {
 	int left = 0;
@@ -21,7 +22,18 @@ int binary_search(std::vector<T> sorted_array, const T& value) {
 	return -1;
 }
 
+
+template <typename T, typename S>
+concept is_ptr = requires(T first, S second) {
+	*first; *second;
+};
 template <typename T>
+concept is_cont = requires(T cont) {
+	cont.begin();
+};
+
+
+template <typename T> requires is_ptr<T,T>
 T Min_Element(T begin, T end) {
 	T res = begin;
 	while (begin != end) {
@@ -33,8 +45,8 @@ T Min_Element(T begin, T end) {
 }
 
 
-template <typename T>
-T Max_Element(T begin, T end) {
+template <typename T>	requires is_ptr<T, T>
+T Max_Element(T begin, T end)  {
 	T res = begin;
 	while (begin != end) {
 		if (*begin > *res)
@@ -43,13 +55,27 @@ T Max_Element(T begin, T end) {
 	}
 	return res;
 }
-template<typename T>
-std::pair<T, T> MinMax(T begin, T end) {
+
+template <typename T>
+void quick_sort(std::vector<T>& vec) {
+	if (vec.empty())
+		return;
+	auto cdm = Max_Element(vec.begin(), vec.end());
+	auto max = *cdm;
+	vec.erase(cdm);
+	quick_sort(vec);
+	vec.push_back(max);
+	
+
+}
+
+template<typename T> requires is_ptr<T, T>
+std::pair<T, T> MinMax(T begin, T end)  {
 	std::pair<T, T> p(Min_Element(begin, end), Max_Element(begin, end));
 	return p;
 }
 
-template <typename T, typename S>
+template <typename T, typename S> requires is_ptr<T, T>
 T Find(T begin, T end, S value) {
 	while (begin != end) {
 		if (*begin == value)
@@ -59,8 +85,9 @@ T Find(T begin, T end, S value) {
 	return end;
 }
 
-template<typename T, typename S>
-T Find_if(T begin, T end, S cond) {
+
+template<typename T, typename S> requires is_ptr<T,S>
+T Find_if(T begin, T end, S cond)  {
 	while (begin != end) {
 		if (cond(*begin))
 			return begin;
@@ -69,8 +96,8 @@ T Find_if(T begin, T end, S cond) {
 	return end;
 }
 
-template<typename T, typename S>
-T Find_if_not(T begin, T end, S cond) {
+template<typename T, typename S> requires is_ptr<T, S>
+T Find_if_not(T begin, T end, S cond)  {
 	while (begin != end) {
 		if (!cond(*begin))
 			return begin;
@@ -78,8 +105,10 @@ T Find_if_not(T begin, T end, S cond) {
 	}
 	return end;
 }
-template<typename T,typename S>
-S Copy(T source_start, T source_end, S dest_start) {
+
+
+template<typename T,typename S> requires is_ptr<T,S>
+S Copy(T source_start, T source_end, S dest_start)   {
 	while (source_start != source_end) {
 		*dest_start = *source_start;
 		++source_start;
@@ -87,7 +116,8 @@ S Copy(T source_start, T source_end, S dest_start) {
 	}
 	return dest_start;
 }
-template<typename T, typename S, typename C>
+
+template<typename T, typename S, typename C> requires is_ptr<T, S>
 T Copy_if(T source_start, T source_end, S dest_start, C condition) {
 	while (source_start != source_end) {
 		if (condition(*source_start)) {
@@ -99,8 +129,12 @@ T Copy_if(T source_start, T source_end, S dest_start, C condition) {
 	return dest_start;
 }
 
-template<typename T, typename S>
-T Remove(T start, T end, const S& value) {
+
+
+
+
+template<typename T, typename S> requires is_ptr<T,T>
+T Remove(T start, T end, const S& value)  {
 	size_t cap = (end - start) + 1;
 	S* temp = new S[cap];
 	S* ptr = &temp[0];
@@ -119,7 +153,7 @@ T Remove(T start, T end, const S& value) {
 	return beg + size;
 }
 
-template<typename T, typename S>
+template<typename T, typename S> requires is_ptr<T, T>
 T Remove_if(T start, T end, bool (*cond)(S)) {
 	size_t cap = (end - start) + 1;
 	S* temp = new S[cap];
@@ -139,17 +173,18 @@ T Remove_if(T start, T end, bool (*cond)(S)) {
 	return beg + size;
 }
 
-template <typename T, typename S>
-void Erase(T& cont, const S& value) {
+
+template <typename T, typename S>	requires is_cont<T>
+void Erase(T& cont, const S& value)  {
 	auto iter = Remove(cont.begin(), cont.end(), value);
 	cont.erase(iter, cont.end());
 }
-template <typename T, typename S>
-void Erase_if(T& cont, S cond) {
+template <typename T, typename S>	requires is_cont<T>
+void Erase_if(T& cont, S cond)	 {
 	auto iter = Remove_if(cont.begin(), cont.end(), cond);
 	cont.erase(iter, cont.end());
 }
-template <typename T>
+template <typename T> requires is_ptr<T, T>
 void Sort(T start, T end) {
 	for (auto i = start; i != end; ++i) {
 		for (auto j = start; j != end - 1; ++j) {
@@ -162,7 +197,7 @@ void Sort(T start, T end) {
 	}
 }
 
-template <typename T, typename C>
+template <typename T, typename C> requires is_ptr<T, T>
 void Sort(T start, T end, C compare) {
 	for (auto i = start; i != end; ++i) {
 		for (auto j = start; j != end - 1; ++j) {
@@ -175,16 +210,17 @@ void Sort(T start, T end, C compare) {
 	}
 }
 
+
 template <typename T>
-void Sort_Cont(T& cont) {
+void Sort_Cont(T& cont) requires is_cont<T> {
 	Sort(cont.begin(), cont.end());
 }
-template <typename T, typename C>
+template <typename T, typename C> requires is_cont<T>
 void Sort_Cont(T& cont, C compare) {
 	Sort(cont.begin(), cont.end(), compare);
 }
 template <typename T, typename C, typename F>
-void Sort_Cont(T& cont, C compare, F proj) {
+void Sort_Cont(T& cont, C compare, F proj)	requires is_cont<T> {
 	for (auto i = cont.begin(); i != cont.end(); ++i) {
 		for (auto j = cont.begin(); j != cont.end() - 1; ++j) {
 			if (!compare(proj(*j),proj(*(j+1)))) {
@@ -197,7 +233,7 @@ void Sort_Cont(T& cont, C compare, F proj) {
 }
 
 template <typename Cont, typename E>
-Cont filter(const Cont& cont, bool (*filter)(E)) {
+Cont filter(const Cont& cont, bool (*filter)(E)) requires is_cont<Cont> {
 	auto start = cont.begin();
 	E* arr = new E[cont.size()];
 	auto new_start = &arr[0];
