@@ -24,6 +24,7 @@ class Graph{
 	void DFS(vector<vector<string>>& paths,vector<string>& vec, const string& id, const string& goal);
 public:
 	Graph() = default;
+	Graph(const string& file_path);
 	size_t get_size() { return size; }
 	void add_node(const string& id, const string& output = {}, int weight = 0);
 	void make_connection(const string& output, const string& input, int weight);
