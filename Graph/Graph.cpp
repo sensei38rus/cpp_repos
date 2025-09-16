@@ -18,13 +18,18 @@ void Graph::add_node(const string& id, const string& output_id, int weight) {
 }
 
 void Graph::make_connection(const string& output, const string& input, int weight) {
-	if (nodes.count(output) && nodes.count(input) && weight >= 0) {
-		nodes[output]->output_nodes[input] = weight;
-		nodes[input]->input_nodes[output] = weight;
-	}
-	else
-		throw invalid_argument("invalid arguments");
+
+	if (!nodes.count(output)) 
+		add_node(output);
+	
+	if (!nodes.count(input))
+		add_node(input);
+
+	nodes[output]->output_nodes[input] = weight;
+	nodes[input]->input_nodes[output] = weight;
 }
+	
+
 
 void Graph::erase_node(const string& id) {
 	if (nodes.count(id)) {
@@ -129,20 +134,30 @@ pair<vector<string>, int> Graph::find_way_DFS(const string& A, const string& B) 
 
 void Graph::make_connections(const string& origin, const vector<pair<string, int>>& output_ids) {
 	if (!nodes.count(origin))
-		throw invalid_argument("Node does not exists");
+		add_node(origin);
 
 	for (auto id : output_ids) {
+		if (!nodes.count(id.first))
+			add_node(id.first);
 		nodes[origin]->output_nodes[id.first] = id.second;
 		nodes[id.first]->input_nodes[origin] = id.second;
 	}
 }
 
+
+
+
 pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
-	unordered_map<string, int> node_weight;
-	unordered_map<string, string> node_parent;
-	queue<string> check;
-	
-	for (auto node : nodes) {
+	unordered_map<string, int> node_weight; //хэш таблица узел-вес
+	unordered_map<string, string> node_parent; //хэш таблица узел-родитель
+
+	auto comparator = [&node_weight](const string& node1, const string& node2) {
+		return node_weight[node1] > node_weight[node2];
+	};
+	//queue<string> check; //очередь приоритета
+	priority_queue<string, std::vector<string>, decltype(comparator)> check(comparator);
+
+		for (auto node : nodes) {
 		if (node.first == A)
 			continue;
 		if (nodes[A]->output_nodes.count(node.first)) {
@@ -157,10 +172,10 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 	}
 
 	while (!check.empty()) {
-		for (auto node : nodes[check.front()]->output_nodes) {
-			if (nodes[check.front()]->output_nodes[node.first] + node_weight[check.front()] < node_weight[node.first]) {
-				node_weight[node.first] = nodes[check.front()]->output_nodes[node.first] + node_weight[check.front()];
-				node_parent[node.first] = check.front();
+		for (auto node : nodes[check.top()]->output_nodes) {
+			if (nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()] < node_weight[node.first]) {
+				node_weight[node.first] = nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()];
+				node_parent[node.first] = check.top();
 				check.push(node.first);
 			}
 		}
