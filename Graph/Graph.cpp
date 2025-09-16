@@ -4,7 +4,11 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
 using namespace std;
+
 
 void Graph::add_node(const string& id, const string& output_id, int weight) {
 	shared_ptr<Node> new_node = make_shared<Node>(id);
@@ -173,6 +177,12 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 
 	while (!check.empty()) {
 		for (auto node : nodes[check.top()]->output_nodes) {
+			/*if (node.first == B) {
+				node_weight[B] = nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()];
+				node_parent[B] = check.top();
+				break;
+			}*/
+
 			if (nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()] < node_weight[node.first]) {
 				node_weight[node.first] = nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()];
 				node_parent[node.first] = check.top();
@@ -185,19 +195,43 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 	vector<string> path{B};
 	int distance = node_weight[B];
 	auto curr_node = B;
-	while (curr_node != A) {
+	//while (curr_node != A) {
+	//	path.push_back(node_parent[curr_node]);
+	//	curr_node = node_parent[curr_node];
+	//}
+	for (int i = 0; i < node_weight.size(); i++) {
 		path.push_back(node_parent[curr_node]);
 		curr_node = node_parent[curr_node];
+		if (curr_node == A) {
+			return { path,distance };
+		}
+			
 	}
-
-	//auto last = path.end() - 1;
-	//auto first = path.begin();
-	//while (last != first) {
-	//	auto temp = *last;
-	//	*last = *first;
-	//	*first = temp;
-	//	--last;
-	//	++first;
-	//}
+	path = {};
+	distance = 0;
 	return { path, distance };
+}
+
+
+Graph::Graph(const string& file_path) {
+	ifstream file(file_path);
+	string str{};
+	while (getline(file,str)) {
+		string output{};
+		string input{};
+		string weight{};
+
+		stringstream stream(str);
+		stream >> output >> input >> weight;
+		int w_int{};
+		try {
+			w_int = stoi(weight);
+		}
+		catch (const exception& e) {
+			continue;
+		}
+		make_connection(output, input, w_int);
+
+	}
+	file.close();
 }
