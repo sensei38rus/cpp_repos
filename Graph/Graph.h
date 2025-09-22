@@ -10,22 +10,21 @@ using namespace std;
 
 class Graph;
 class Node {
-	string id{};
-	unordered_map<string, int> output_nodes;
-	unordered_map<string, int> input_nodes;
+	string id{};  //id узла
+	unordered_map<string, int> output_nodes; //исходящие узлы
+	unordered_map<string, int> input_nodes; //входящие узлы
 public:
 	Node(const string& id) : id(id){}
 	friend class Graph;
 };
 
 class Graph{
-	unordered_map<string, shared_ptr<Node>> nodes;
-	size_t size{};
+	unordered_map<string, shared_ptr<Node>> nodes; // узлы
 	void DFS(vector<vector<string>>& paths,vector<string>& vec, const string& id, const string& goal);
 public:
 	Graph() = default;
 	Graph(const string& file_path);
-	size_t get_size() { return size; }
+	size_t get_size() { return nodes.size(); }
 	void add_node(const string& id, const string& output = {}, int weight = 0);
 	void make_connection(const string& output, const string& input, int weight);
 	void make_connections(const string& id, const vector<pair<string,int>>& output_ids);
