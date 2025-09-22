@@ -1,3 +1,30 @@
+#include <memory>
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <initializer_list>
+#include <stdexcept>
+
+using namespace std;
+
+template <typename T>
+class Binary_Tree;
+
+template <typename T>
+class Tree_Node {
+	T data{};
+	unique_ptr<Tree_Node> left{};
+	unique_ptr<Tree_Node> right{};
+public:
+	Tree_Node(const T& data) : data(data) {}
+
+	template<typename T>
+	friend class Binary_Tree;
+
+};
+
+
 template <typename T>
 class Binary_Tree {
 	unique_ptr<Tree_Node<T>> root{};
