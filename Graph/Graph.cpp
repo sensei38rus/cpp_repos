@@ -161,7 +161,7 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 	//queue<string> check; //очередь приоритета
 	priority_queue<string, std::vector<string>, decltype(comparator)> check(comparator);
 
-		for (auto node : nodes) {
+	for (auto node : nodes) {
 		if (node.first == A)
 			continue;
 		if (nodes[A]->output_nodes.count(node.first)) {
@@ -195,10 +195,7 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 	vector<string> path{B};
 	int distance = node_weight[B];
 	auto curr_node = B;
-	//while (curr_node != A) {
-	//	path.push_back(node_parent[curr_node]);
-	//	curr_node = node_parent[curr_node];
-	//}
+	
 	for (int i = 0; i < node_weight.size(); i++) {
 		path.push_back(node_parent[curr_node]);
 		curr_node = node_parent[curr_node];
@@ -215,6 +212,9 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 
 Graph::Graph(const string& file_path) {
 	ifstream file(file_path);
+	if (!file.is_open())
+		throw runtime_error("file was not found");
+
 	string str{};
 	while (getline(file,str)) {
 		string output{};
