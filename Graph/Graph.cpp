@@ -155,34 +155,37 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 	unordered_map<string, int> node_weight; //хэш таблица узел-вес
 	unordered_map<string, string> node_parent; //хэш таблица узел-родитель
 
+	//л€мбда функи€ компаратор чтобы приоритет был у узлов с меньшим весом
 	auto comparator = [&node_weight](const string& node1, const string& node2) {
 		return node_weight[node1] > node_weight[node2];
 	};
 	//queue<string> check; //очередь приоритета
 	priority_queue<string, std::vector<string>, decltype(comparator)> check(comparator);
 
+	//заполнение таблиц первичными данными
 	for (auto node : nodes) {
 		if (node.first == A)
 			continue;
+
+		//если узел €вл€етс€ соседом A узла, вносим в таблицы известные данные
 		if (nodes[A]->output_nodes.count(node.first)) {
 			node_weight[node.first] = nodes[A]->output_nodes[node.first];
 			node_parent[node.first] = A;
 			check.push(node.first);
 		}
+		//если нет, то заполн€ем таблицы неизвестными данными
 		else {
-			node_weight[node.first] = numeric_limits<int>::max();
+			node_weight[node.first] = numeric_limits<int>::max(); //максимальное значение int, альтернатива бесконечности
 			node_parent[node.first] = "-";
 		}
 	}
 
+	//основной цикл алгоритма
 	while (!check.empty()) {
+		//проходимс€ по сосед€м приоритетного узла
 		for (auto node : nodes[check.top()]->output_nodes) {
-			/*if (node.first == B) {
-				node_weight[B] = nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()];
-				node_parent[B] = check.top();
-				break;
-			}*/
-
+			//если сумма пути до приоритетного узла и его соседа, то есть полный  путь до соседа, меньше известного пути до данного соседа, 
+			// обновл€ем данные в таблице
 			if (nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()] < node_weight[node.first]) {
 				node_weight[node.first] = nodes[check.top()]->output_nodes[node.first] + node_weight[check.top()];
 				node_parent[node.first] = check.top();
@@ -191,19 +194,24 @@ pair<vector<string>, int> Graph::dijkstra(const string& A, const string& B){
 		}
 		check.pop();
 	}
-
+	//вектор пути
 	vector<string> path{B};
+	//сумма пути
 	int distance = node_weight[B];
 	auto curr_node = B;
 	
+
 	for (int i = 0; i < node_weight.size(); i++) {
+		//добавл€ем в вектор узлы с помощью таблицы узел-родитель
 		path.push_back(node_parent[curr_node]);
 		curr_node = node_parent[curr_node];
+		//если узел равен ј, полный путь уже есть
 		if (curr_node == A) {
 			return { path,distance };
 		}
 			
 	}
+	//если код дошел до этого места значит пути между ј и B нету и возвращаетс€ пустой путь
 	path = {};
 	distance = 0;
 	return { path, distance };
