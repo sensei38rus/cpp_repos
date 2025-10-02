@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <memory>
 #include <unordered_map>
 #include <string>
@@ -38,3 +40,4 @@ public:
 };
 
 
+#endif

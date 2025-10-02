@@ -6,7 +6,7 @@
 #include <queue>
 #include <sstream>
 #include "Graph.h"
-//using namespace std;
+using namespace std;
 
 int main() {
    /* auto start = chrono::high_resolution_clock::now();
@@ -49,7 +49,7 @@ int main() {
         }
         cout << endl;
         auto end = chrono::high_resolution_clock::now();
-        auto duration = duration_cast<chrono::microseconds>(end - start);
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
 
         cout << "Execution time: " << duration.count() << " mircoseconds" << endl;
         cout << "Execution time: " << duration.count() / 1000.0 << " milliseconds" << endl;

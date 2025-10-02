@@ -1,7 +1,9 @@
-#pragma once
+#ifndef ALGO.H
+#define ALGO.H
 #include <vector>
 #include <span>
 #include <type_traits>
+#include <concepts>
 template <typename T>
 int binary_search(std::vector<T> sorted_array, const T& value) {
 	int left = 0;
@@ -354,3 +356,4 @@ public:
 	const T* begin() { return &data[0]; }
 	const T* end() { return &data[size]; }
 };
+#endif
