@@ -1,9 +1,12 @@
-#ifndef ALGO.H
-#define ALGO.H
+#ifndef ALGO_H
+#define ALGO_H
 #include <vector>
 #include <span>
 #include <type_traits>
 #include <concepts>
+
+
+const int SIZE = 10;
 template <typename T>
 int binary_search(std::vector<T> sorted_array, const T& value) {
 	int left = 0;
