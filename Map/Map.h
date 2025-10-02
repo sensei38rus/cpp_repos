@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MAP_H
+#define MAP_H
 #include <memory>
 #include <iostream>
 #include <stdexcept>
@@ -210,3 +211,5 @@ void Map<T, S>::erase(const T& key) {
 
 
 }
+
+#endif 
